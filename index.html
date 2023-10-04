@@ -411,8 +411,8 @@
             updateProgressBar(0, columns.length);
             for (let i = 0; i < columns.length; i++) {
                 if (i % 30 == 0 && i != 0) {
-                    showFooterMessage("Taking a little nap so that we don't get rate limited, will start back up in 15 seconds 😴");
-                    await new Promise(resolve => setTimeout(resolve, 1000 * 15))
+                    showFooterMessage("Taking a little nap so that we don't get rate limited, will start back up in 30 seconds 😴");
+                    await new Promise(resolve => setTimeout(resolve, 1000 * 30))
                     showFooterMessage("Texts are sending, go to dialpad 🐥💼");
                 }
                 let row = columns[i];
@@ -470,7 +470,7 @@
                     await new Promise(resolve => setTimeout(resolve, 100));
                 }
 
-                // await new Promise(resolve => setTimeout(resolve, 1000));
+                await new Promise(resolve => setTimeout(resolve, 2000));
             }
 
             continueButton.style.display = 'none';
