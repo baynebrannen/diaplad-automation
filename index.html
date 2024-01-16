@@ -233,7 +233,7 @@
 </head>
 <body>
     <div class="container">
-        <p>Last Updated: Jan 16, 2024 2:44PM</p>
+        <p>Last Updated: Jan 16, 2024 2:48PM</p>
         <h2 id="header">Select an Airtable view as a CSV file</h2>
         <label for="csvFile">Drag and drop a CSV file or click to select one:</label>
         <div class="input-wrapper">
@@ -342,7 +342,7 @@
             let cleanNumber = phoneNumber.replace(/\D/g, "");
             if (cleanNumber.length === 10) {
                 cleanNumber = "+1" + cleanNumber;
-            } else if (cleanNumber.length === 11 && cleanNumber.charAt(0) === "1") {
+            } else if (cleanNumber.length === 11) {
                 cleanNumber = "+" + cleanNumber;
             }
             return cleanNumber;
