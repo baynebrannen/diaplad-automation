@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -59,7 +60,8 @@
             justify-content: center;
             width: 100%;
             min-width: 300px;
-            max-width: 800px; /* Change this value to adjust the width */
+            max-width: 800px;
+            /* Change this value to adjust the width */
             height: 100px;
             border: 2px dashed #4caf50;
             border-radius: 5px;
@@ -89,7 +91,8 @@
             padding-right: 20%; */
         }
 
-        input[type="text"], input[type="password"] {
+        input[type="text"],
+        input[type="password"] {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
@@ -127,8 +130,7 @@
             width: 0;
         }
 
-        .progress-text
-        {
+        .progress-text {
             position: absolute;
             color: #fff;
             font-weight: bold;
@@ -228,9 +230,9 @@
             font-weight: bold;
             margin-top: 10px;
         }
-
     </style>
 </head>
+
 <body>
     <div class="container">
         <p>Last Updated: Jan 16, 2024 2:48PM</p>
@@ -248,7 +250,9 @@
         <input type="password" id="dialpad">
         <label for="dialpadText">Dialpad User ID</label>
         <input type="password" id="dialpadUserId">
-        <label for="userMessage">Enter the message you want to send, put [FIRST_NAME] where you want the person's name to be. Example: Hola [FIRST_NAME] te saluda...</label>
+        <label for="userMessage">Enter the message you want to send. <br /> Put [FIRST_NAME] where you want the person's
+            name to be, and [REQUEST_URL] where you want a link to the request form to be. <br /> Example: Hola
+            [FIRST_NAME] te saluda... [REQUEST_URL]</label>
         <input type="text" id="userMessage">
         <button id="startButton">Start Parsing</button>
         <button id="pauseButton" style="display: none;">Pause Parsing</button>
@@ -266,6 +270,7 @@
         let isParsing = false; // track the parsing state
         let selectedFile;
         const DIALPAD_API_URL = "https://dialpad.com/api/v2/sms"
+        const BAM_URL = "https://bushwickayudamutua.com/"
 
         const startButton = document.getElementById('startButton');
         const pauseButton = document.getElementById('pauseButton');
@@ -299,7 +304,7 @@
                 complete: function (results) {
                     const progressText = document.getElementById('progressText');
                     const messageCountText = document.getElementById('messageCount')
-                    progressText.textContent =  '0/' + results.data.length;
+                    progressText.textContent = '0/' + results.data.length;
                     messageCountText.textContent = results.data.length + " records in this file"
                 }
             });
@@ -312,6 +317,20 @@
                     return results.data.length;
                 }
             });
+        }
+
+        function getRandomHex(size = 4) {
+            let result = [];
+            let hexRef = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
+            for (let n = 0; n < size; n++) {
+                result.push(hexRef[Math.floor(Math.random() * 16)]);
+            }
+            return result.join('');
+        }
+
+        function getRandomRequestURL() {
+            // Our site is configured to redirect a random URL to the request form
+            return BAM_URL + getRandomHex();
         }
 
         function updateProgressBar(currentRow, columnLength) {
@@ -359,7 +378,7 @@
             return words[0];
         }
 
-        function split_message(message) {
+        function splitMessage(message) {
             // Splits the message into multiple messages
             // I can split the message into multiple messages on space... and then I can just iterate through it instead
             // and then I can keep adding messages to the current message until the next word would get it over..
@@ -396,9 +415,9 @@
         async function postData(url, payload, headers) {
             try {
                 const response = await fetch(url, {
-                method: "POST",
-                headers: headers,
-                body: JSON.stringify(payload),
+                    method: "POST",
+                    headers: headers,
+                    body: JSON.stringify(payload),
                 });
                 const json = await response.json();
                 console.log("Response:", json);
@@ -419,11 +438,13 @@
                 console.log("---------")
                 console.log(row)
                 console.log("---------")
+                let requestURL = getRandomRequestURL();
                 let firstName = getFirstWord(row["First Name"]);
                 let phoneNum = cleanPhoneNumber(row["Phone Number"]);
 
                 updated_message = message.replace(/\[FIRST_NAME\]/g, firstName);
-                split_messages = split_message(updated_message)
+                updated_message = updated_message.replace(/\[REQUEST_URL\]/g, requestURL);
+                split_messages = splitMessage(updated_message)
                 for (let split_message_index = 0; split_message_index < split_messages.length; split_message_index++) {
                     current_split_message = split_messages[split_message_index]
                     payload = {
@@ -498,27 +519,27 @@
             } else if (!userMessageInput) {
                 alert('Please enter the message to send.');
             } else {
-            // Show parsing warning before starting parsing
-            // Parse CSV file to get message count
-            Papa.parse(selectedFile, {
-                header: true,
-                complete: function (results) {
-                    const messageCount = results.data.length;
-                    // Show parsing warning before starting parsing
-                    const shouldStartParsing = showParsingWarning(messageCount);
-                    if (shouldStartParsing) {
-                        isParsing = true; // set the parsing state to true
-                        pauseButton.style.display = 'inline-block';
-                        continueButton.style.display = 'none';
-                        startButton.style.display = 'none';
-                        processCSV(selectedFile, dialpadApiTokenInput, dialpadUserId, userMessageInput);
-                    } else {
-                        startButton.style.display = 'inline-block';
+                // Show parsing warning before starting parsing
+                // Parse CSV file to get message count
+                Papa.parse(selectedFile, {
+                    header: true,
+                    complete: function (results) {
+                        const messageCount = results.data.length;
+                        // Show parsing warning before starting parsing
+                        const shouldStartParsing = showParsingWarning(messageCount);
+                        if (shouldStartParsing) {
+                            isParsing = true; // set the parsing state to true
+                            pauseButton.style.display = 'inline-block';
+                            continueButton.style.display = 'none';
+                            startButton.style.display = 'none';
+                            processCSV(selectedFile, dialpadApiTokenInput, dialpadUserId, userMessageInput);
+                        } else {
+                            startButton.style.display = 'inline-block';
+                        }
                     }
-                }
-            });
-                }
-            });
+                });
+            }
+        });
 
         pauseButton.addEventListener('click', function () {
             isParsing = false; // set the parsing state to false
@@ -567,4 +588,5 @@
 
     </script>
 </body>
+
 </html>
